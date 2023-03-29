@@ -15,7 +15,7 @@ namespace CRUD.Data
         }
 
         public DbSet<CRUD.Models.Order> Orders { get; set; } = default!;
-        public DbSet<CRUD.Models.OrderItem> OrderItem { get; set; } = default!;
-        public DbSet<CRUD.Models.Provider> Provider { get; set; } = default!;
+        public DbSet<CRUD.Models.OrderItem> OrderItems { get; set; } = default!;
+        public DbSet<CRUD.Models.Provider> Providers { get; set; } = default!;
     }
 }
