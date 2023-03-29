@@ -1,0 +1,75 @@
+@model IEnumerable<CRUD.Models.Order>
+
+@{
+    ViewData["Title"] = "Заказы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Заказы</h1>
+
+<h4>Фильтры</h4>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Номер заказа: <select name="selectedNumber" asp-items="ViewBag.OrderNumbers">
+                <option value="">---</option>
+            </select>&nbsp;
+            Поставщик: <select name="selectedProvider" asp-items="ViewBag.Providers">
+                <option value="">---</option>
+            </select>
+            Наименование товара: <select name="selectedItem" asp-items="ViewBag.Items">
+                <option value="">---</option>
+            </select>
+            Модель товара: <select name="selectedUnit" asp-items="ViewBag.Units">
+                <option value="">---</option>
+            </select>
+        </p>
+        <p>
+            Начальная дата: <input type="date" name="startDate" value=@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")/>&nbsp; &nbsp;
+            Конечная дата: <input type="date" name="endDate" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>&nbsp; &nbsp;
+            <input type="submit" value="Применить" class="btn btn-info" style="color:white"/> &nbsp; | &nbsp;
+            <a asp-action="Index">Сбросить</a>
+        </p>
+    </div>
+</form>
+
+<div>
+    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Order" )'">&#43 Создать новый заказ</button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NumSortPar"]">Номер заказа</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortPar"]">Дата создания</a>
+            </th>
+            <th>
+                Поставщик
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr onclick="location.href = '@Url.Action( "Details", "Order", new { id=@item.Id})'">
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Provider.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Детали</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

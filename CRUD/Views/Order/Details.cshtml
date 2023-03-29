@@ -1,0 +1,65 @@
+@using CRUD.Models
+@model CRUD.ViewModels.OrderItemsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Детали заказа</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Order.Number)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Order.Number)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Order.Date)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Order.Date)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Order.ProviderId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Order.Provider.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Order.Id">Редактировать</a> |
+    <a asp-action="Delete" asp-route-id="@Model?.Order.Id">Удалить</a> |
+    <a asp-action="Index">К списку заказов</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td>Наименование</td>
+            <td>Модель</td>
+            <td>Количество</td>
+        </tr>
+    </thead>
+<tbody>
+@foreach (var item in Model.OrderItems)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Unit)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Quantity)
+
+        </td>
+    </tr>
+}
+ </tbody>
+</table>

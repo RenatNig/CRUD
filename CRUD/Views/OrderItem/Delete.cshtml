@@ -1,0 +1,48 @@
+@model CRUD.Models.OrderItem
+
+@{
+    ViewData["Title"] = "Удаление товара";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Удаление товара</h1>
+
+<h4>Вы уверены, что хотите удалить этот товар из заказа №</h4>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Order)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Order.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Unit)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Unit)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" /> 
+        <p/>
+        <div>
+            <button type="button" class="btn btn-light" onclick="location.href='@Url.Action("Edit", "Order", new { id = Model.Order.Id} )'">&#x2190; Вернуться к заказу</button>
+        </div>
+    </form>
+</div>
