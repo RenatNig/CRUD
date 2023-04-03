@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CRUD.Data;
+using CRUD.Data.Abstract;
 using CRUD.Models;
 using CRUD.ViewModels;
 
@@ -14,7 +15,8 @@ namespace CRUD.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly EFDbContext _context;
+        //private readonly EFDbContext _context;
+        private EFDbContext _context;
 
         public OrderController(EFDbContext context)
         {
@@ -29,23 +31,23 @@ namespace CRUD.Controllers
             ViewData["StartDate"] = startDate;
             ViewData["EndDate"] = endDate;
 
-            ViewData["Numbers"] = new SelectList(_context.Orders
+            ViewData["Numbers"] = new SelectList(_context.Order
                 .GroupBy(c=>c.Number)
                 .Select(s => s.First()), "Id", "Number");
             
-            ViewData["Providers"] = new SelectList(_context.Providers
+            ViewData["Providers"] = new SelectList(_context.Provider
                 .GroupBy(c=>c.Name)
                 .Select(s => s.First()), "Id", "Name");
             
-            ViewData["Items"] = new SelectList(_context.OrderItems
+            ViewData["Items"] = new SelectList(_context.OrderItem
                 .GroupBy(c=>c.Name)
                 .Select(s => s.First()), "Id", "Name");
             
-            ViewData["Units"] = new SelectList(_context.OrderItems
+            ViewData["Units"] = new SelectList(_context.OrderItem
                 .GroupBy(c=>c.Unit)
                 .Select(s => s.First()), "Id", "Unit");
             
-            IQueryable<Order> orders = _context.Orders
+            IQueryable<Order> orders = _context.Order
                 .Include(o => o.Provider);
             
             if (startDate != null && endDate != null)
@@ -85,17 +87,17 @@ namespace CRUD.Controllers
         // GET: Order/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Orders == null)
+            if (id == null || _context.Order == null)
             {
                 return NotFound();
             }
 
             OrderItemsViewModel orderAndItems = new OrderItemsViewModel()
             {
-                Order = await _context.Orders
+                Order = _context.Order
                     .Include(o => o.Provider)
-                    .FirstOrDefaultAsync(m => m.Id == id),
-                OrderItems = _context.OrderItems
+                    .FirstOrDefault(m => m.Id == id),
+                OrderItems = _context.OrderItem
                     .Where(s=>s.OrderId == id).ToList()
             };
             //orderAndItems.OrderItems = orderAndItems.OrderItems.Where(s => s.OrderId == id);
@@ -110,7 +112,7 @@ namespace CRUD.Controllers
         // GET: Order/Create
         public IActionResult Create()
         {
-            ViewData["Providers"] = new SelectList(_context.Providers, "Id", "Name");
+            ViewData["Providers"] = new SelectList(_context.Provider, "Id", "Name");
             return View();
         }
 
@@ -121,7 +123,7 @@ namespace CRUD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Order order)
         {
-            var orderCheck = _context.Orders
+            var orderCheck = _context.Order
                 .Any(n => n.Number == order.Number && n.ProviderId == order.ProviderId);
             
             if (ModelState.IsValid)
@@ -135,7 +137,7 @@ namespace CRUD.Controllers
                 else
                 {
                     ModelState.AddModelError(nameof(order.Number), "У данного поставщика уже есть заказ с таким номером");
-                    ViewData["Providers"] = new SelectList(_context.Providers, "Id", "Name");
+                    ViewData["Providers"] = new SelectList(_context.Provider, "Id", "Name");
                     return View(order);
                 }
             }
@@ -145,17 +147,17 @@ namespace CRUD.Controllers
         // GET: Order/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            ViewData["Providers"] = new SelectList(_context.Providers, "Id", "Name");
-            if (id == null || _context.Orders == null)
+            ViewData["Providers"] = new SelectList(_context.Provider, "Id", "Name");
+            if (id == null || _context.Order == null)
             {
                 return NotFound();
             }
 
             OrderItemsViewModel orderAndItems = new OrderItemsViewModel()
             {
-                Order = await _context.Orders
-                    .FirstOrDefaultAsync(m => m.Id == id),
-                OrderItems = _context.OrderItems
+                Order = _context.Order
+                    .FirstOrDefault(m => m.Id == id),
+                OrderItems = _context.OrderItem
                     .Where(s=>s.OrderId == id).ToList()
             };
             if (orderAndItems.Order == null)
@@ -210,13 +212,13 @@ namespace CRUD.Controllers
         // GET: Order/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Orders == null)
+            if (id == null || _context.Order == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var order = _context.Order
+                .FirstOrDefault(m => m.Id == id);
             if (order == null)
             {
                 return NotFound();
@@ -230,14 +232,14 @@ namespace CRUD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Orders == null)
+            if (_context.Order == null)
             {
                 return Problem("Entity set 'CRUDContext.Order'  is null.");
             }
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Order.FindAsync(id);
             if (order != null)
             {
-                _context.Orders.Remove(order);
+                _context.Remove(order);
             }
             
             await _context.SaveChangesAsync();
@@ -246,7 +248,7 @@ namespace CRUD.Controllers
 
         private bool OrderExists(int id)
         {
-          return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Order?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

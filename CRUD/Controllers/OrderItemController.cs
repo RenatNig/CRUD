@@ -22,19 +22,19 @@ namespace CRUD.Controllers
         // GET: OrderItem
         public async Task<IActionResult> Index()
         {
-            var eFDbContext = _context.OrderItems.Include(o => o.Order);
+            var eFDbContext = _context.OrderItem.Include(o => o.Order);
             return View(await eFDbContext.ToListAsync());
         }
 
         // GET: OrderItem/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.OrderItems == null)
+            if (id == null || _context.OrderItem == null)
             {
                 return NotFound();
             } 
 
-            var orderItem = await _context.OrderItems
+            var orderItem = await _context.OrderItem
                 .Include(o => o.Order)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (orderItem == null)
@@ -61,7 +61,7 @@ namespace CRUD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OrderItem orderItem)
         {
-            var checkOrder = _context.Orders
+            var checkOrder = _context.Order
                 .Any(n => n.Id == orderItem.OrderId && n.Number == orderItem.Name);
 
             if (ModelState.IsValid)
@@ -74,12 +74,12 @@ namespace CRUD.Controllers
                }
                else
                {
-                   var order = _context.Orders
+                   var order = _context.Order
                        .First(n => n.Id == orderItem.OrderId && n.Number == orderItem.Name);
 
                    ModelState.AddModelError(nameof(orderItem.Name),
                        "Наименование товара не может быть равно номеру заказа (" + order.Number + ")");
-                   ViewData["Providers"] = new SelectList(_context.Providers, "Id", "Name");
+                   ViewData["Providers"] = new SelectList(_context.Provider, "Id", "Name");
                    //ViewData["OrderId"] = ;
                    return View(orderItem);
                }
@@ -90,17 +90,17 @@ namespace CRUD.Controllers
         // GET: OrderItem/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.OrderItems == null)
+            if (id == null || _context.OrderItem == null)
             {
                 return NotFound();
             }
 
-            var orderItem = await _context.OrderItems.FindAsync(id);
+            var orderItem = await _context.OrderItem.FindAsync(id);
             if (orderItem == null)
             {
                 return NotFound();
             }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderItem.OrderId);
+            ViewData["OrderId"] = new SelectList(_context.Order, "Id", "Id", orderItem.OrderId);
             return View(orderItem);
         }
 
@@ -136,19 +136,19 @@ namespace CRUD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "Id", orderItem.OrderId);
+            ViewData["OrderId"] = new SelectList(_context.Order, "Id", "Id", orderItem.OrderId);
             return View(orderItem);
         }
 
         // GET: OrderItem/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.OrderItems == null)
+            if (id == null || _context.OrderItem == null)
             {
                 return NotFound();
             }
 
-            var orderItem = await _context.OrderItems
+            var orderItem = await _context.OrderItem
                 .Include(o => o.Order)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (orderItem == null)
@@ -164,14 +164,14 @@ namespace CRUD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.OrderItems == null)
+            if (_context.OrderItem == null)
             {
                 return Problem("Entity set 'EFDbContext.OrderItem'  is null.");
             }
-            var orderItem = await _context.OrderItems.FindAsync(id);
+            var orderItem = await _context.OrderItem.FindAsync(id);
             if (orderItem != null)
             {
-                _context.OrderItems.Remove(orderItem);
+                _context.OrderItem.Remove(orderItem);
             }
             
             await _context.SaveChangesAsync();
@@ -180,7 +180,7 @@ namespace CRUD.Controllers
 
         private bool OrderItemExists(int id)
         {
-          return (_context.OrderItems?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.OrderItem?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
